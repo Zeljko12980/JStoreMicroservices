@@ -15,6 +15,10 @@ namespace Auth.Application.Common.Interface
         ValueTask<bool> SigninUserAsync(string userName, string password);
         ValueTask<string> GetUserIdAsync(string userName);
 
+        ValueTask<(bool isSucceed, string userId)> RegisterUserAsync(string username, string password, string email,
+            string fullName);
+        Task<bool> ConfirmEmailAsync(string userId, string token);
+
 
         #endregion
 
@@ -32,6 +36,9 @@ namespace Auth.Application.Common.Interface
         Task<bool> DeleteRoleAsync(string roleId);
         ValueTask<(string id, string roleName)> GetRoleByIdAsync(string id);
         ValueTask<bool> UpdateRole(string id, string roleName);
+
+        Task<bool> LoginAsync(string email, string password);
+        Task<(string id,string userName,string token)> VerifyTwoFactorCodeAsync(string email, string code);
 
 
 

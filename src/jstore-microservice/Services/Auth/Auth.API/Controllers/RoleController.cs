@@ -1,8 +1,11 @@
 ﻿
+using Microsoft.AspNetCore.Authorization;
+
 namespace Auth.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class RoleController : ControllerBase
     {
         public readonly IMediator _mediator;

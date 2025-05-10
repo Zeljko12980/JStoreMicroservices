@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.AspNetCore.Authorization;
+
 namespace Auth.API.Controllers
 {
     [Route("api/[controller]")]
@@ -11,18 +13,21 @@ namespace Auth.API.Controllers
             _mediator = mediator;
         }
 
+        [Authorize("SuperAdmin")]
         [HttpPost("Create")]
         [ProducesDefaultResponseType(typeof(int))]
         public async Task<IActionResult> CreateUser(CreateUserCommand userCommand)
             => Ok(await _mediator.Send(userCommand));
 
         [HttpGet("GetAll")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         [ProducesDefaultResponseType(typeof(int))]
         public async Task<IActionResult> GetAllUserAsync()
             => Ok(await _mediator.Send(new Application.Queries.User.GetUserQuery()));
 
 
         [HttpDelete("Delete/{userId}")]
+        [Authorize("SuperAdmin")]
         [ProducesDefaultResponseType(typeof(int))]
         public async Task<IActionResult> DeleteUser(string userId)
         {
@@ -31,6 +36,7 @@ namespace Auth.API.Controllers
         }
 
         [HttpGet("GetUserDetails/{userId}")]
+        [Authorize]
         [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
         public async Task<IActionResult> GetUserDetails(string userId)
         {
@@ -39,6 +45,7 @@ namespace Auth.API.Controllers
         }
 
         [HttpGet("GetUserDetailsByUserName/{userName}")]
+        [Authorize(Roles ="Admin,SuperAdmin")]
         [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
         public async Task<IActionResult> GetUserDetailsByUserName(string userName)
         {
@@ -48,7 +55,7 @@ namespace Auth.API.Controllers
 
         [HttpPost("AssignRoles")]
         [ProducesDefaultResponseType(typeof(int))]
-
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<ActionResult> AssignRoles(AssignUsersRoleCommand command)
         {
             var result = await _mediator.Send(command);
@@ -57,6 +64,7 @@ namespace Auth.API.Controllers
 
         [HttpPut("EditUserRoles")]
         [ProducesDefaultResponseType(typeof(int))]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> EditUserRoles(UpdateUserRolesCommand command)
         {
             var result = await _mediator.Send(command);
@@ -64,6 +72,7 @@ namespace Auth.API.Controllers
         }
 
         [HttpGet("GetAllUserDetails")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
         public async Task<IActionResult> GetAllUserDetails()
         {
@@ -73,6 +82,7 @@ namespace Auth.API.Controllers
 
         [HttpPut("EditUserProfile/{id}")]
         [ProducesDefaultResponseType(typeof(int))]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditUserProfile(string id, [FromBody] EditUserProfileCommand command)
         {
             if (id == command.Id)

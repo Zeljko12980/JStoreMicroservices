@@ -6,3 +6,4 @@ global using Auth.Application.Dtos;
 global using BuildingBlocks.CQRS;
 global using System.Reflection;
 global using Microsoft.Extensions.DependencyInjection;
+global using MediatR;

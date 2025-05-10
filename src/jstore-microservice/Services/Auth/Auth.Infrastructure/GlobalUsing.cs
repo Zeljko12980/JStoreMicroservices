@@ -1,0 +1,16 @@
+﻿global using Microsoft.AspNetCore.Identity;
+global using Microsoft.Data.SqlClient;
+global using Microsoft.Extensions.Configuration;
+global using System.Data;
+global using Auth.Infrastructure.Identity;
+global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore;
+global using Auth.Domain.Repository.Command.Base;
+global using Auth.Infrastructure.Data;
+global using Auth.Domain.Repository.Query.Base;
+global using Auth.Application.Common.Exception;
+global using Auth.Application.Common.Interface;
+global using Microsoft.IdentityModel.Tokens;
+global using System.IdentityModel.Tokens.Jwt;
+global using System.Security.Claims;
+global using System.Text;

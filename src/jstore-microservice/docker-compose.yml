@@ -1,8 +1,20 @@
 services:
   authdb:
-   image: mcr.microsoft.com/mssql/server
+    image: mcr.microsoft.com/mssql/server
+  catalogdb:
+    image: postgres
+
   auth.api:
     image: ${DOCKER_REGISTRY-}authapi
     build:
       context: .
       dockerfile: Services/Auth/Auth.API/Dockerfile
+
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}catalogapi
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.API/Dockerfile
+volumes:
+  postgres_catalog:
+

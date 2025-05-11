@@ -275,11 +275,11 @@ namespace Auth.Infrastructure.Services
             }
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
-            if (!result.Succeeded)
+           /* if (!result.Succeeded)
             {
                 return false; // Email confirmation failed
             }
-
+           */
             // After email confirmation, enable two-factor authentication
             // Example: enable 2FA for the user
             await _userManager.SetTwoFactorEnabledAsync(user, true);

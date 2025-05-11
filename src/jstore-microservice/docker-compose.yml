@@ -1,20 +1,53 @@
 services:
   authdb:
-    image: mcr.microsoft.com/mssql/server
+   image: mcr.microsoft.com/mssql/server
+  
   catalogdb:
     image: postgres
+   
+  basketdb:
+    image: postgres
 
+  distributedcache:
+    image: redis
+
+  orderdb:
+    image: mcr.microsoft.com/mssql/server
+
+  messagebroker:
+    image: rabbitmq:management
   auth.api:
     image: ${DOCKER_REGISTRY-}authapi
     build:
       context: .
       dockerfile: Services/Auth/Auth.API/Dockerfile
 
+  discount.grpc:
+    image: ${DOCKER_REGISTRY-}discountgrpc
+    build:
+      context: .
+      dockerfile: Services/Discount/Discount.Grpc/Dockerfile
+
+
   catalog.api:
     image: ${DOCKER_REGISTRY-}catalogapi
     build:
       context: .
       dockerfile: Services/Catalog/Catalog.API/Dockerfile
+
+  basket.api:
+    image: ${DOCKER_REGISTRY-}basketapi
+    build:
+      context: .
+      dockerfile: Services/Basket/Basket.API/Dockerfile
+
+  ordering.api:
+    image: ${DOCKER_REGISTRY-}orderingapi
+    build:
+      context: .
+      dockerfile: Services/Ordering/Ordering.API/Dockerfile
+
 volumes:
   postgres_catalog:
+  postgres_basket:
 

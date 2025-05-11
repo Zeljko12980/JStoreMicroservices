@@ -27,6 +27,8 @@ namespace Auth.Infrastructure.Services
                 FullName = fullName,
                 UserName = username,
                 Email = email,
+                TwoFactorEnabled=false,
+      
             };
 
             var result = await _userManager.CreateAsync(user, password);
@@ -40,6 +42,21 @@ namespace Auth.Infrastructure.Services
             {
                 throw new ValidationException(addUserRole.Errors);
             }
+
+            var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            // Kreiranje URL-a za potvrdu
+            var confirmationUrl = $"https://localhost:6064/api/auth/confirmemail?token={confirmationToken}&userId={user.Id}";
+
+            // Slanje emaila sa linkom za potvrdu
+            var emailSubject = "Confirm your email address";
+            var emailBody = $"Please confirm your email address by clicking the following link: {confirmationUrl}";
+
+            await _emailService.SendEmailAsync(user.Email, emailSubject, emailBody);
+
+         
+
+
             return (result.Succeeded, user.Id);
 
 

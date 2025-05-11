@@ -13,21 +13,21 @@ namespace Auth.API.Controllers
             _mediator = mediator;
         }
 
-        [Authorize("SuperAdmin")]
+       // [Authorize("SuperAdmin")]
         [HttpPost("Create")]
         [ProducesDefaultResponseType(typeof(int))]
         public async Task<IActionResult> CreateUser(CreateUserCommand userCommand)
             => Ok(await _mediator.Send(userCommand));
 
         [HttpGet("GetAll")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+      //  [Authorize(Roles = "Admin,SuperAdmin")]
         [ProducesDefaultResponseType(typeof(int))]
         public async Task<IActionResult> GetAllUserAsync()
             => Ok(await _mediator.Send(new Application.Queries.User.GetUserQuery()));
 
 
         [HttpDelete("Delete/{userId}")]
-        [Authorize("SuperAdmin")]
+     //   [Authorize("SuperAdmin")]
         [ProducesDefaultResponseType(typeof(int))]
         public async Task<IActionResult> DeleteUser(string userId)
         {
@@ -36,7 +36,7 @@ namespace Auth.API.Controllers
         }
 
         [HttpGet("GetUserDetails/{userId}")]
-        [Authorize]
+       // [Authorize]
         [ProducesDefaultResponseType(typeof(UserDetailsResponseDto))]
         public async Task<IActionResult> GetUserDetails(string userId)
         {

@@ -9,7 +9,7 @@ public class DeleteBasketEndpoints : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapDelete("/basket/{userName}", async (HttpContext context, ISender sender) =>
+        app.MapDelete("/basket", async (HttpContext context, ISender sender) =>
         {
             var userName = context.User?.FindFirst(ClaimTypes.Name)?.Value;
 

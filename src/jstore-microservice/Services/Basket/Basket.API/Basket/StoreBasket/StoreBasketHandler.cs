@@ -3,7 +3,7 @@
 namespace Basket.API.Basket.StoreBasket;
 
 public record StoreBasketCommand(ShoppingCart Cart) : ICommand<StoreBasketResult>;
-public record StoreBasketResult(string UserName);
+public record StoreBasketResult(ShoppingCart Cart);
 
 public class StoreBasketCommandValidator : AbstractValidator<StoreBasketCommand>
 {
@@ -24,7 +24,7 @@ public class StoreBasketCommandHandler
         
         await repository.StoreBasket(command.Cart, cancellationToken);
 
-        return new StoreBasketResult(command.Cart.UserName);
+        return new StoreBasketResult(command.Cart);
     }
 
     private async Task DeductDiscount(ShoppingCart cart, CancellationToken cancellationToken)

@@ -1,19 +1,31 @@
 ﻿using BuildingBlocks.Messaging.Events;
 using MassTransit;
+using MediatR;
 using Ordering.Application.Orders.Commands.CreateOrder;
 
 namespace Ordering.Application.Orders.EventHandlers.Integration;
 public class BasketCheckoutEventHandler
-    (ISender sender, ILogger<BasketCheckoutEventHandler> logger)
+    (ISender sender, ILogger<BasketCheckoutEventHandler> logger, IApplicationDbContext _context)
     : IConsumer<BasketCheckoutEvent>
 {
     public async Task Consume(ConsumeContext<BasketCheckoutEvent> context)
     {
-        // TODO: Create new order and start order fullfillment process
-        logger.LogInformation("Integration Event handled: {IntegrationEvent}", context.Message.GetType().Name);
+        var customer = await _context.Customers
+                  .FirstOrDefaultAsync(c => c.Name == context.Message.UserName);
 
-        var command = MapToCreateOrderCommand(context.Message);
-        await sender.Send(command);
+        // Ako korisnik ne postoji, kreiraj novog korisnika
+        if (customer == null)
+        {
+            customer = Customer.Create(CustomerId.Of(context.Message.CustomerId), context.Message.UserName, context.Message.EmailAddress);
+
+            await _context.Customers.AddAsync(customer);
+            await _context.SaveChangesAsync(context.CancellationToken); // Pass the CancellationToken from the context
+
+            logger.LogInformation("New customer added: {CustomerId}", context.Message.CustomerId); // Ensure logger is used
+
+            var command = MapToCreateOrderCommand(context.Message);
+            await sender.Send(command);
+        }
     }
 
     private CreateOrderCommand MapToCreateOrderCommand(BasketCheckoutEvent message)

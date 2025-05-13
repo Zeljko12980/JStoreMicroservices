@@ -1,0 +1,19 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "GrpcContracts";
+
+package product;
+
+service ProductService {
+  rpc CheckProductAvailability (ProductAvailabilityRequest) returns (ProductAvailabilityResponse);
+}
+
+message ProductAvailabilityRequest {
+  string productId = 1;
+  int32 requestedQuantity = 2;
+}
+
+message ProductAvailabilityResponse {
+  bool isAvailable = 1;
+  int32 availableQuantity = 2;
+}

@@ -1,5 +1,7 @@
 ﻿
+
 using BuildingBlocks.Messaging.Events;
+using GrpcContracts;
 using MassTransit;
 
 namespace Basket.API.Basket.CheckoutBasket;
@@ -19,7 +21,7 @@ public class CheckoutBasketCommandValidator
 }
 
 public class CheckoutBasketCommandHandler
-    (IBasketRepository repository, IPublishEndpoint publishEndpoint)
+    (IBasketRepository repository, IPublishEndpoint publishEndpoint, ProductService.ProductServiceClient productClient)
     : ICommandHandler<CheckoutBasketCommand, CheckoutBasketResult>
 {
     public async Task<CheckoutBasketResult> Handle(CheckoutBasketCommand command, CancellationToken cancellationToken)
@@ -33,6 +35,22 @@ public class CheckoutBasketCommandHandler
         if (basket == null)
         {
             return new CheckoutBasketResult(false);
+        }
+
+        foreach (var item in basket.Items)
+        {
+            var response = await productClient.CheckProductAvailabilityAsync(
+                new ProductAvailabilityRequest
+                {
+                    ProductId = item.ProductId.ToString(),
+                    RequestedQuantity = item.Quantity
+                });
+
+            if(response.IsAvailable==false)
+            {
+                return new CheckoutBasketResult(false);
+            }
+
         }
 
         var eventMessage = command.BasketCheckoutDto.Adapt<BasketCheckoutEvent>();

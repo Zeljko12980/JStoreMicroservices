@@ -47,6 +47,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ordering.Domain", "Services
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Inventory", "Inventory", "{4A84857B-C96A-4EAD-8DCC-96DD90AF4862}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inventory.Grpc", "Services\Inventory\Inventory.Grpc\Inventory.Grpc.csproj", "{06605BF4-31E4-EF48-3E9A-76F66C96699D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +113,10 @@ Global
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06605BF4-31E4-EF48-3E9A-76F66C96699D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06605BF4-31E4-EF48-3E9A-76F66C96699D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06605BF4-31E4-EF48-3E9A-76F66C96699D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06605BF4-31E4-EF48-3E9A-76F66C96699D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -132,6 +140,8 @@ Global
 		{6E8AD615-B886-71E4-A850-80B639B79D24} = {86760500-8CA9-496F-A87F-99FFB2C2BC66}
 		{8D6331C5-72A6-DEFA-2B59-5F115C5D739E} = {86760500-8CA9-496F-A87F-99FFB2C2BC66}
 		{066FDE78-4996-BE3D-BC3E-8EB4D9C32329} = {86760500-8CA9-496F-A87F-99FFB2C2BC66}
+		{4A84857B-C96A-4EAD-8DCC-96DD90AF4862} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{06605BF4-31E4-EF48-3E9A-76F66C96699D} = {4A84857B-C96A-4EAD-8DCC-96DD90AF4862}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E4498059-7D90-40C0-9365-9317A068F33F}

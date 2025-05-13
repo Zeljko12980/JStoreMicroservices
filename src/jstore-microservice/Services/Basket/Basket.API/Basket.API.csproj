@@ -32,6 +32,10 @@
     <Protobuf Include="..\..\Discount\Discount.Grpc\Protos\discount.proto" GrpcServices="Client">
       <Link>Protos\discount.proto</Link>
     </Protobuf>
+    <Protobuf Include="..\..\Inventory\Inventory.Grpc\Protos\inventory.proto" GrpcServices="Client">
+      <Link>Protos\inventory.proto</Link>
+    </Protobuf>
+ 
   </ItemGroup>
 
 </Project>

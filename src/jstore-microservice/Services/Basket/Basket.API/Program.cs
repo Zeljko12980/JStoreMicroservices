@@ -1,5 +1,7 @@
 
 
+using GrpcContracts;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -50,6 +52,10 @@ builder.Services.AddMarten(opts =>
     opts.Schema.For<ShoppingCart>().Identity(x => x.UserName);
 }).UseLightweightSessions();
 
+
+
+
+
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 builder.Services.Decorate<IBasketRepository, CachedBasketRepository>();
 
@@ -74,6 +80,23 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
 
     return handler;
 });
+
+builder.Services.AddGrpcClient<ProductService.ProductServiceClient>(o =>
+{
+    o.Address = new Uri(builder.Configuration["GrpcSettings:InventoryUrl"]!); // URL where ProductService is running
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    };
+
+    return handler;
+});
+
+
 
 //Async Communication Services
 builder.Services.AddMessageBroker(builder.Configuration);

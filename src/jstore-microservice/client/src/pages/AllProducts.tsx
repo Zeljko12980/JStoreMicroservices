@@ -1,39 +1,31 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { useAppSelector, useAppDispatch } from "../redux/hooks"; // Import hooks
-import { fetchProducts } from "../redux/features/productSlice"; // Import the async thunk
+import { useAppSelector, useAppDispatch } from "../redux/hooks";
+import { addProducts } from "../redux/features/productSlice";
 import ProductCard from "../components/ProductCard";
 import { Product } from "../models/Product";
-import Loading from "../components/Loading";
 
 const AllProducts: FC = () => {
   const dispatch = useAppDispatch();
   const sortRef = useRef<HTMLSelectElement>(null);
   const [currentProducts, setCurrentProducts] = useState<Product[]>([]);
-  const searchTerm=useAppSelector((state)=>state.productReducer.searchTerm);
-  
-  const { allProducts, loading, error } = useAppSelector(
-    (state) => state.productReducer
+  const allProducts = useAppSelector(
+    (state) => state.productReducer.allProducts
   );
 
   useEffect(() => {
-    // Dispatch fetchProducts when the component mounts
-    if(searchTerm)
-    {
-    dispatch(fetchProducts({searchTerm}));
-    window.scrollTo(0, 0); // Pomera stranicu na vrh (0, 0)
-    console.log("Prvi");
-    }
-    else
-    {
-      dispatch(fetchProducts());
-      window.scrollTo(0, 0);
-      console.log("Drugi");
-    }
+    const fetchProducts = () => {
+      fetch("https://localhost:6065/catalog-service/products")
+        .then((res) => res.json())
+        .then(({ products }) => {
+          console.log("Products fetched from server:", products);
+          dispatch(addProducts(products));
+        });
+    };
 
-  }, [dispatch]);
+    if (allProducts.length === 0) fetchProducts();
+  }, [allProducts, dispatch]);
 
   useEffect(() => {
-    // Sync the current products with the Redux store
     setCurrentProducts(allProducts);
   }, [allProducts]);
 
@@ -63,14 +55,6 @@ const AllProducts: FC = () => {
     }
   };
 
-  if (loading) {
-    return <Loading/>;
-  }
-/*
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-*/
   return (
     <div className="container mx-auto min-h-[83vh] p-4 font-karla">
       <div className="grid grid-cols-4 gap-1">
@@ -88,10 +72,9 @@ const AllProducts: FC = () => {
             </select>
           </div>
           <div className="grid gap-4 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
-            {currentProducts.map((product) => {
-              console.log(`Rendering product with ID: ${product.id}`);
-              return <ProductCard key={product.id} {...product} />;
-            })}
+            {currentProducts.map((product) => (
+              <ProductCard key={product.id} {...product} />
+            ))}
           </div>
         </div>
       </div>

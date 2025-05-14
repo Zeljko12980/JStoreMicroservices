@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
+// Dodaj CORS
+// CORS konfiguracija
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // frontend React dev server
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Dodaj ovo AKO koristiš cookies ili auth
+    });
+});
+
+
+// Rate limiter konfiguracija
 builder.Services.AddRateLimiter(rateLimiterOptions =>
 {
     rateLimiterOptions.AddFixedWindowLimiter("fixed", options =>
@@ -17,9 +33,13 @@ builder.Services.AddRateLimiter(rateLimiterOptions =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Use CORS pre ReverseProxy
+app.UseCors("AllowFrontend");
+
+// Rate limiter
 app.UseRateLimiter();
 
+// Reverse Proxy
 app.MapReverseProxy();
 
 app.Run();

@@ -3,7 +3,7 @@ import ProductList from "./ProductList";
 
 const LatestProducts = () => {
   const newProducts = useAppSelector(
-    (state) => state.productReducer.newList
+    (state) => state.productReducer.newProducts
   );
 
   return <ProductList title="New Arrivals" products={newProducts} />;

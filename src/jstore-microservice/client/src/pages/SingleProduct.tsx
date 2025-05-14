@@ -1,9 +1,8 @@
 import { FC, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { addCartItem, setCartState } from "../redux/features/cartSlice";
-import { fetchProductDetails, fetchSimilarProducts } from "../redux/features/productSlice";
-//import { Product } from "../models/Product";
+import { useAppDispatch } from "../redux/hooks";
+import { addToCart, setCartState } from "../redux/features/cartSlice";
+import { Product } from "../models/Product";
 import RatingStar from "../components/RatingStar";
 import PriceSection from "../components/PriceSection";
 import toast from "react-hot-toast";
@@ -13,86 +12,68 @@ import ProductList from "../components/ProductList";
 import Reviews from "../components/Reviews";
 import useAuth from "../hooks/useAuth";
 import { MdFavoriteBorder } from "react-icons/md";
-import Loading from "../components/Loading";
-import { addToWishlist } from "../redux/features/wishSlice";
+import { addToWishlist } from "../redux/features/productSlice";
+
+const lorem =
+  "It is important to take care of the patient, to be followed by the patient, but it will happen at such a time that there is a lot of work and pain. For to come to the smallest detail, no one should practice any kind of work unless he derives some benefit from it. Do not be angry with the pain in the reprimand in the pleasure he wants to be a hair from the pain in the hope that there is no breeding. Unless they are blinded by lust, they do not come forth; they are in fault who abandon their duties and soften their hearts, that is, their labors.";
 
 const SingleProduct: FC = () => {
   const dispatch = useAppDispatch();
   const { productID } = useParams();
+  const [product, setProduct] = useState<Product>();
+  const [imgs, setImgs] = useState<string[]>();
+  const [selectedImg, setSelectedImg] = useState<string>();
+  const [sCategory, setScategory] = useState<string>();
+  const [similar, setSimilar] = useState<Product[]>([]);
   const { requireAuth } = useAuth();
 
-  const product = useAppSelector((state) => state.productReducer.product);
-  const similarProducts = useAppSelector((state) => state.productReducer.similarProducts);
-  const loading = useAppSelector((state) => state.productReducer.loading);
-  //const error = useAppSelector((state) => state.productReducer.error);
-
-  const userId = localStorage.getItem("userId");
+  useEffect(() => {
+    const fetchProductDetails = () => {
+      fetch(`https://dummyjson.com/products/${productID}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const { thumbnail, images, category } = data;
+          setProduct(data);
+          setImgs(images);
+          setScategory(category);
+          setSelectedImg(thumbnail);
+        });
+    };
+    fetchProductDetails();
+  }, [productID]);
 
   useEffect(() => {
-    if (productID) {
-      window.scrollTo(0, 0); // Pomera stranicu na vrh (0, 0)
-
-      dispatch(fetchProductDetails(productID)); // Fetch the selected product
-    }
-  }, [dispatch, productID]);
-
-  useEffect(() => {
-    if (product?.category) {
-      dispatch(fetchSimilarProducts(product.category)); // Fetch similar products based on category
-    }
-  }, [dispatch, product]);
-
-  const handleAddToWishlist = (productId) => {
-    // Assuming userId comes from Redux state or another context
-    const userId1 = localStorage.getItem("userId");
-  
-    if (userId1 && productId) {
-      dispatch(addToWishlist({ userId:userId1, productId }));
-    } else {
-      console.log("User ID or Product ID is missing");
-    }
-  };
-
-  const handleShare = () => {
-    if (product) {
-      const shareData = {
-        title: product.title,
-        text: `Check out this product: ${product.title}`,
-        url: window.location.href,
-      };
-
-      if (navigator.share) {
-        navigator.share(shareData)
-          .then(() => toast.success("Product shared successfully!", { duration: 3000 }))
-          .catch((err) => console.error("Error sharing", err));
-      } else {
-        const encodedURL = encodeURIComponent(window.location.href);
-        const encodedText = encodeURIComponent(`Check out this product: ${product.title}`);
-        window.open(
-          `https://www.facebook.com/sharer/sharer.php?u=${encodedURL}&quote=${encodedText}`,
-          "_blank"
-        );
-      }
-    } else {
-      toast.error("No product information available to share!", { duration: 3000 });
-    }
-  };
-
-  const [isShareMenuOpen, setShareMenuOpen] = useState(false);
-
-const handleShareMenuToggle = () => setShareMenuOpen(!isShareMenuOpen);
+    const fetchPreferences = (cat: string) => {
+      fetch(`https://dummyjson.com/products/category/${cat}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const _products: Product[] = data.products;
+          const filtered = _products.filter((product) => {
+            if (productID && product.id !== parseInt(productID)) return product;
+          });
+          setSimilar(filtered);
+        });
+    };
+    if (sCategory && sCategory !== "") fetchPreferences(sCategory);
+  }, [productID, sCategory]);
 
   const addCart = () => {
     requireAuth(() => {
       if (product)
         dispatch(
-          addCartItem({
-            userId: userId!,
-            itemId: product.id!,
-            quantity: 1,
+          addToCart({
+            id: product.id,
+            price: product.price,
+            title: product.title,
+            category: product.category,
+            rating: product.rating,
+            thumbnail: product.thumbnail,
+            discountPercentage: product.discountPercentage,
           })
         );
-      toast.success("Item added to cart successfully", { duration: 3000 });
+      toast.success("item added to cart successfully", {
+        duration: 3000,
+      });
     });
   };
 
@@ -100,39 +81,49 @@ const handleShareMenuToggle = () => setShareMenuOpen(!isShareMenuOpen);
     requireAuth(() => {
       if (product)
         dispatch(
-          addCartItem({
-            userId: userId!,
-            itemId: product.id!,
-            quantity: 1,
+          addToCart({
+            id: product.id,
+            price: product.price,
+            title: product.title,
+            category: product.category,
+            rating: product.rating,
+            thumbnail: product.thumbnail,
+            discountPercentage: product.discountPercentage,
           })
         );
-      dispatch(setCartState({ isOpen: true }));
+      dispatch(setCartState(true));
     });
   };
 
-  if (loading) {
-    return (
-<Loading/>
-
-    );
-  }
-
- 
+  const addWishlist = () => {
+    requireAuth(() => {
+      if (product) {
+        dispatch(addToWishlist(product));
+        toast.success("item added to your wishlist", {
+          duration: 3000,
+        });
+      }
+    });
+  };
 
   return (
     <div className="container mx-auto pt-8 dark:text-white">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 px-4 font-karla">
         <div className="space-y-2">
-          <img src={product?.thumbnail} alt="selected" className="h-80" />
+          <img src={selectedImg} alt="selected" className="h-80" />
           <div className="flex space-x-1 items-center">
-            {product?.images.map((_img:any) => (
-              <img
-                src={_img}
-                key={_img}
-                alt="thumb"
-                className={`w-12 cursor-pointer hover:border-2 hover:border-black`}
-              />
-            ))}
+            {imgs &&
+              imgs.map((_img) => (
+                <img
+                  src={_img}
+                  key={_img}
+                  alt="thumb"
+                  className={`w-12 cursor-pointer hover:border-2 hover:border-black ${
+                    _img === selectedImg ? "border-2 border-black" : ""
+                  }`}
+                  onClick={() => setSelectedImg(_img)}
+                />
+              ))}
           </div>
         </div>
         <div className="px-2">
@@ -164,76 +155,41 @@ const handleShareMenuToggle = () => setShareMenuOpen(!isShareMenuOpen);
           </table>
           <div className="mt-2">
             <h2 className="font-bold">About the product</h2>
-            <p className="leading-5">{product?.description}</p>
+            <p className="leading-5">
+              {product?.description} {lorem}
+            </p>
           </div>
-          <div className="flex flex-wrap items-center mt-4 mb-2 space-x-2">
+          <div className="flex flex-wrap items-center mt-4 mb-2">
             <button
               type="button"
-              className="flex items-center space-x-1 mb-2 hover:bg-pink-700 text-white p-2 rounded bg-pink-500"
+              className="flex space-x-1 items-center mr-2 mb-2 hover:bg-pink-700 text-white py-2 px-4 rounded bg-pink-500"
               onClick={addCart}
+              title="ADD TO CART"
             >
               <AiOutlineShoppingCart />
-              <span>ADD TO CART</span>
             </button>
             <button
               type="button"
-              className="flex items-center space-x-1 mb-2 bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+              className="flex space-x-1 items-center mr-2 mb-2 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
               onClick={buyNow}
+              title="BUY NOW"
             >
               <FaHandHoldingDollar />
-              <span>BUY NOW</span>
             </button>
             <button
               type="button"
-              className="flex items-center space-x-1 mb-2 bg-yellow-500 text-white p-2 rounded hover:bg-yellow-700"
-              onClick={()=>handleAddToWishlist(product?.id)}
+              className="flex space-x-1 items-center mb-2 bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-700"
+              onClick={addWishlist}
+              title="ADD TO WISHLIST"
             >
               <MdFavoriteBorder />
-              <span>ADD TO WISHLIST</span>
             </button>
-
-            <div className="relative">
-    <button
-      type="button"
-      className="text-gray-500 hover:text-gray-700 p-2"
-      onClick={handleShareMenuToggle}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-55 w-10"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M12 6v.01M12 12v.01M12 18v.01"
-        />
-      </svg>
-    </button>
-    {isShareMenuOpen && (
-      <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg dark:bg-gray-800">
-        <ul>
-          <li
-            className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer"
-            onClick={() => handleShare()}
-          >
-            Share 
-          </li>
-          
-        </ul>
-      </div>
-    )}
-  </div>
-
           </div>
         </div>
-        {product && <Reviews id={product.id} />}
+        {product && <Reviews id={product?.id} />}
       </div>
       <hr className="mt-4" />
-      <ProductList title="Similar Products" products={similarProducts} />
+      <ProductList title="Similar Products" products={similar} />
       <br />
     </div>
   );

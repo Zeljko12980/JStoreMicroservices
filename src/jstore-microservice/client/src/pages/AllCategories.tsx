@@ -1,28 +1,26 @@
 import { FC, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../redux/hooks"; // Import hooks
-import { fetchCategories } from "../redux/features/productSlice"; // Import the async thunk
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { addCategories } from "../redux/features/productSlice";
 import { Link } from "react-router-dom";
-import Loading from "../components/Loading";
 
 const AllCategories: FC = () => {
   const dispatch = useAppDispatch();
 
-  // Access categories from Redux state
-  const allCategories = useAppSelector((state) => state.productReducer.categories);
-  const loading=useAppSelector((state)=>state.productReducer.loading);
-
-
+  const allCategories = useAppSelector(
+    (state) => state.productReducer.categories
+  );
 
   useEffect(() => {
-    // Dispatch the fetchCategories thunk to load categories from the API
-    if (allCategories.length === 0) {
-      dispatch(fetchCategories());
-    }
+    const fetchCategories = () => {
+      fetch("https://dummyjson.com/products/categories")
+        .then((res) => res.json())
+        .then((data) => {
+          dispatch(addCategories(data));
+        });
+    };
+    if (allCategories.length === 0) fetchCategories();
   }, [allCategories, dispatch]);
 
-   if (loading) {
-    return <Loading/>;
-  }
   return (
     <div className="container mx-auto min-h-[83vh] p-4 font-karla">
       <span className="text-lg dark:text-white">Categories</span>
@@ -30,12 +28,12 @@ const AllCategories: FC = () => {
         {allCategories &&
           allCategories.map((category) => (
             <div
-              key={category}
+              key={category.slug}
               className="bg-gray-100 dark:bg-slate-600 dark:text-white px-4 py-4 font-karla mr-2 mb-2"
             >
-              <div className="text-lg">{category}</div>
+              <div className="text-lg">{category.name}</div>
               <Link
-                to={{ pathname: `/category/${category}` }}
+                to={{ pathname: `/category/${category.slug}` }}
                 className="hover:underline text-blue-500"
               >
                 View products

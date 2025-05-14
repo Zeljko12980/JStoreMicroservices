@@ -16,9 +16,7 @@ const ProductList: FC<{ title: string; products: Product[] }> = ({
       className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4"
       data-test="product-list-container"
     >
-      {products
-        ?.slice() // Kreirajte kopiju niza
-        .sort((a, b) => b.rating - a.rating).map((product) => (
+      {products?.map((product) => (
         <ProductCard
           key={product.id}
           id={product.id}
@@ -27,7 +25,8 @@ const ProductList: FC<{ title: string; products: Product[] }> = ({
           price={product.price}
           thumbnail={product.thumbnail}
           rating={product.rating}
-          discountPercentage={product.discountPercentage} images={[]} categoryID={0}        />
+          discountPercentage={product.discountPercentage}
+        />
       ))}
     </div>
   </div>

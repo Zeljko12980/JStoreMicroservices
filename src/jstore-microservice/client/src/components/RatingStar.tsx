@@ -3,29 +3,98 @@ import { FC } from "react";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 
 const RatingStar: FC<{ rating: number }> = ({ rating }) => {
-  // Ensure rating is a valid number between 0 and 5
-  const ratingNum = Math.min(Math.max(Number(rating), 0), 5); // Clamp rating between 0 and 5
-  
-  // Make sure the ratingNum is a valid number
-  if (isNaN(ratingNum)) {
-    console.error("Invalid rating value:", rating);
-    return <div>Error: Invalid rating</div>; // Fallback if rating is invalid
+  const ratingNum = parseFloat(rating.toString());
+  const main = Math.floor(ratingNum);
+  const other = 5 - main;
+
+  let showing: any;
+  if (main === 1) {
+    showing = <AiFillStar />;
+  } else if (main === 2) {
+    showing = (
+      <>
+        <AiFillStar />
+        <AiFillStar />
+      </>
+    );
+  } else if (main === 3) {
+    showing = (
+      <>
+        <AiFillStar />
+        <AiFillStar />
+        <AiFillStar />
+      </>
+    );
+  } else if (main === 4) {
+    showing = (
+      <>
+        <AiFillStar />
+        <AiFillStar />
+        <AiFillStar />
+        <AiFillStar />
+      </>
+    );
+  } else if (main === 5) {
+    showing = (
+      <>
+        <AiFillStar />
+        <AiFillStar />
+        <AiFillStar />
+        <AiFillStar />
+        <AiFillStar />
+      </>
+    );
+  } else {
+    showing = <></>;
   }
 
-  const filledStars = Math.floor(ratingNum); // Number of filled stars
-  const emptyStars = 5 - filledStars; // Number of empty stars
-
-  // Create an array of filled stars and empty stars based on the rating
-  const filledStarsArray = new Array(filledStars).fill(<AiFillStar />);
-  const emptyStarsArray = new Array(emptyStars).fill(<AiOutlineStar />);
+  let notShowing: any;
+  if (other === 1) {
+    notShowing = <AiOutlineStar />;
+  } else if (other === 2) {
+    notShowing = (
+      <>
+        <AiOutlineStar />
+        <AiOutlineStar />
+      </>
+    );
+  } else if (other === 3) {
+    notShowing = (
+      <>
+        <AiOutlineStar />
+        <AiOutlineStar />
+        <AiOutlineStar />
+      </>
+    );
+  } else if (other === 4) {
+    notShowing = (
+      <>
+        <AiOutlineStar />
+        <AiOutlineStar />
+        <AiOutlineStar />
+        <AiOutlineStar />
+      </>
+    );
+  } else if (other === 5) {
+    notShowing = (
+      <>
+        <AiOutlineStar />
+        <AiOutlineStar />
+        <AiOutlineStar />
+        <AiOutlineStar />
+        <AiOutlineStar />
+      </>
+    );
+  } else {
+    notShowing = <></>;
+  }
 
   return (
     <div className="flex items-center text-[#ffb21d]">
-      {/* Render the filled and empty stars */}
-      {filledStarsArray}
-      {emptyStarsArray}
+      {showing}
+      {notShowing}
       <span className="ml-2 text-gray-600 font-semibold dark:text-white">
-        {ratingNum.toFixed(1)} {/* Display rating with one decimal place */}
+        {rating}
       </span>
     </div>
   );

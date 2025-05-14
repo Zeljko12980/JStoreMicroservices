@@ -6,15 +6,12 @@ import {
   MdOutlineLogout,
 } from "react-icons/md";
 import { doLogout } from "../redux/features/authSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const CustomPopup: FC = () => {
   const dispatch = useAppDispatch();
   const [isVisible, setVisible] = useState(false);
   const username = useAppSelector((state) => state.authReducer.username);
-  const navigate=useNavigate();
-  const unreadNotifications=useAppSelector((state)=>state.notifyReducer.count);
-  const isAdmin=useAppSelector((state)=>state.authReducer.isAdmin);
 
   const handlePopup = () => {
     setVisible((v) => !v);
@@ -22,7 +19,6 @@ const CustomPopup: FC = () => {
 
   const handleLogout = () => {
     dispatch(doLogout());
-    navigate('/');
     hidePopup();
   };
 
@@ -37,14 +33,7 @@ const CustomPopup: FC = () => {
         onClick={handlePopup}
         data-test="username-popup"
       >
-       <span>{username}</span>
-
-{/* Ako postoji broj nepročitanih notifikacija, prikaži kružnu oznaku */}
-{unreadNotifications > 0   &&(
-  <span className="absolute top-0 right-0 -mt-2 -mr-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-    {unreadNotifications}
-  </span>
-)}
+        {username}
       </div>
       {isVisible && (
         <div

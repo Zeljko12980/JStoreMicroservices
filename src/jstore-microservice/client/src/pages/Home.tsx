@@ -3,25 +3,42 @@ import HeroSection from "../components/HeroSection";
 import Features from "../components/Features";
 import TrendingProducts from "../components/TrendingProducts";
 import { useAppDispatch } from "../redux/hooks";
-import { fetchHomeProducts } from "../redux/features/productSlice"; // Import the async thunk
+import {
+  updateNewList,
+  updateFeaturedList,
+} from "../redux/features/productSlice";
+import { Product } from "../models/Product";
 import LatestProducts from "../components/LatestProducts";
 import Banner from "../components/Banner";
-import { useAppSelector } from "../redux/store";
-import Loading from "../components/Loading";
 
 const Home: FC = () => {
   const dispatch = useAppDispatch();
-  const loading=useAppSelector((state)=>state.productReducer.loading);
 
-  // Dispatch the fetchHomeProducts thunk inside useEffect
   useEffect(() => {
-    dispatch(fetchHomeProducts()); // This will fetch and store the products in Redux
+    const fetchProducts = () => {
+      fetch("https://dummyjson.com/products?limit=24")
+        .then((res) => res.json())
+        .then(({ products }) => {
+          const productList: Product[] = [];
+          products.forEach((product: Product) => {
+            productList.push({
+              id: product.id,
+              title: product.title,
+              images: product.images,
+              price: product.price,
+              rating: product.rating,
+              thumbnail: product.thumbnail,
+              description: product.description,
+              category: product.category,
+              discountPercentage: product.discountPercentage,
+            });
+          });
+          dispatch(updateFeaturedList(productList.slice(0, 8)));
+          dispatch(updateNewList(productList.slice(8, 16)));
+        });
+    };
+    fetchProducts();
   }, [dispatch]);
-
-  if(loading)
-  {
-    return <Loading/>
-  }
 
   return (
     <div className="dark:bg-slate-800">
